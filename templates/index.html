@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <h1 class="mb-4">Class Attendance</h1>
+        <nav class="mb-4">
+            <a href="{{ url_for('add_student') }}" class="btn btn-primary me-2">Add Student</a>
+            <a href="{{ url_for('attendance') }}" class="btn btn-success me-2">Mark Attendance</a>
+            <a href="{{ url_for('records') }}" class="btn btn-info">View Records</a>
+        </nav>
+        <h2>Students</h2>
+        <ul class="list-group">
+            {% for student in students %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ student[1] }}</span>
+                    <span>
+                        <a href="{{ url_for('edit_student', student_id=student[0]) }}" class="btn btn-sm btn-warning me-2">Edit</a>
+                        <form action="{{ url_for('delete_student', student_id=student[0]) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this student?');">Delete</button>
+                        </form>
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
