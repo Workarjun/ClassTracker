@@ -1,32 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Attendance Home</title>
+    <title>AttendEase - Class Attendance</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <div class="container py-4">
-        <h1 class="mb-4">Class Attendance</h1>
-        <nav class="mb-4">
-            <a href="{{ url_for('add_student') }}" class="btn btn-primary me-2">Add Student</a>
-            <a href="{{ url_for('attendance') }}" class="btn btn-success me-2">Mark Attendance</a>
-            <a href="{{ url_for('records') }}" class="btn btn-info">View Records</a>
-        </nav>
-        <h2>Students</h2>
-        <ul class="list-group">
-            {% for student in students %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ student[1] }}</span>
-                    <span>
-                        <a href="{{ url_for('edit_student', student_id=student[0]) }}" class="btn btn-sm btn-warning me-2">Edit</a>
-                        <form action="{{ url_for('delete_student', student_id=student[0]) }}" method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this student?');">Delete</button>
-                        </form>
-                    </span>
-                </li>
-            {% endfor %}
-        </ul>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="mb-0"><i class="fas fa-chalkboard-teacher text-primary"></i> AttendEase</h1>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="showAddStudentModal()">
+                            <i class="fas fa-plus"></i> Add Student
+                        </button>
+                        <a href="{{ url_for('attendance') }}" class="btn btn-success">
+                            <i class="fas fa-calendar-check"></i> Mark Attendance
+                        </a>
+                        <a href="{{ url_for('records') }}" class="btn btn-info">
+                            <i class="fas fa-chart-bar"></i> View Records
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-users"></i> Students List</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="studentsContainer">
+                            {% for student in students %}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 border-0 shadow-sm student-card" data-student-id="{{ student[0] }}">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ student[1] }}</h6>
+                                        <div class="btn-group w-100" role="group">
+                                            <button class="btn btn-sm btn-outline-warning" onclick="editStudent({{ student[0] }}, '{{ student[1] }}')">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent({{ student[0] }}, '{{ student[1] }}')">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if not students %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No students added yet</h5>
+                            <p class="text-muted">Click "Add Student" to get started</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-plus"></i> Add New Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="post" action="{{ url_for('add_student') }}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="studentName" class="form-label">Student Name</label>
+                            <input type="text" class="form-control" id="studentName" name="name" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-edit"></i> Edit Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editStudentForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editStudentName" class="form-label">Student Name</label>
+                            <input type="text" class="form-control" id="editStudentName" name="name" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Update Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
