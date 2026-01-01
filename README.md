@@ -77,18 +77,4 @@ A modern, responsive web application for managing class attendance. Built with F
 - Custom CSS animations and transitions
 - Professional typography and spacing
 
----
-
-## Screenshots
-_Add screenshots of your app here!_
-
----
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-## License
-This project is for educational purposes.
 
